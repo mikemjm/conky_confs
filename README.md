@@ -6,8 +6,163 @@
   <img src="https://github.com/mikemjm/conky_confs/blob/main/conky_pc.png" />
 </p>
 
-![pc_config](https://github.com/mikemjm/conky_confs/blob/main/conky_pc.png)
+```bash
+local _dirname_ = debug.getinfo(1, "S").source:sub(2):match("(.*[/\\])")
 
-[pc_conky.conf](https://github.com/mikemjm/conky_confs/blob/main/conky_pc.conf)
+conky.config = {
+
+	--Various settings       
+		background = true,
+		cpu_avg_samples = 2,
+		diskio_avg_samples = 10,
+		double_buffer = true,
+		if_up_strictness = 'address',
+		net_avg_samples = 2,
+		no_buffers = true,
+		temperature_unit = 'celsius',
+		update_interval = 1,
+		imlib_cache_size = 0,
+    	cpu_avg_samples = 2,
+    	no_buffers = true,
+    	out_to_console = false,
+    	out_to_stderr = false,
+    	extra_newline = false,
+    	own_window = true,
+    	stippled_borders = 0,
+    	update_interval = 1.0,
+    	uppercase = false,
+    	use_spacer = 'none',
+    
+    -- Placement
+
+    	alignment = 'top_right',
+    	gap_x = -860, -- 160
+    	gap_y = 0,
+		minimum_width = 350,
+		maximum_width = 350,
+		
+	--Graphical
+
+		border_inner_margin = 10,
+		border_outer_margin = 10,
+		draw_borders = false,
+		draw_graph_borders = true,        
+		draw_shades = false,
+		draw_outline = false,
+		show_graph_scale = false,
+    	show_graph_range = false,
+    	own_window_argb_visual = true,
+    	own_window_transparent = true,
+    	own_window_argb_value = 192,        
+    	own_window_type = 'dock', -- options are: normal/override/dock/desktop/panel, --desktop for bspwm
+        own_window_class = 'Conky',
+        own_window_hints = 'undecorated,below,skip_taskbar,sticky,skip_pager' ,
+	
+	-- Text
+
+		-- text
+		font = 'hack:size=9.5',		
+		format_human_readable = true,
+		use_xft = true,
+	    max_text_width = 0,
+		short_units = true,
+		xftalpha = 1,
+    
+    -- Colors
+    	
+	default_color = '#000000',  				-- default color and border color
+	color1 = '#68A1DF', 						-- title_color
+	color2 = '#FAA916',						    -- top memory or processe, graphs
+	color3 = '#FBFFFE',						    -- text color     
+    	
+}
 
 
+conky.text = [[
+#------------+
+# INFO
+#------------+
+${color1}${font :size=14:bold}INFO ${hr 2}${font}
+${voffset 5}${color1}OS :$alignr${color3} Arch
+${voffset 2}${color1}Kernel :$alignr${color3} $kernel
+${voffset 2}${color1}Uptime :$alignr${color3} $uptime
+
+$alignc${color2}${font hack:bold:size:=16}$time
+#------------+
+#STATS
+#------------+
+${voffset 10}${color1}${font :size=14:bold}STATS ${hr 2}${font}
+${voffset 5}${color1}Name : ${color3}$alignr${execi 6000 cat /proc/cpuinfo | grep 'model name' | sed -e 's/model name.*: //'| uniq | cut -c 5-24}
+${voffset 2}${color1}Freq : ${color3}${freq_g} GHz$alignr${color1}CPU Usage : ${color3}${cpu}%
+${voffset 2}${color1}CPU Temp : ${color3}${execi 2 echo $(sensors -f | grep Tctl | cut -c 15-22)}$alignr${color1}GPU Temp : ${color3}${execi 5 echo $(($(cat /sys/class/drm/card0/device/hwmon/hwmon4/temp1_input) / 1000 *9/5+32))}°F
+#${voffset 2}${color1}GPU Load : ${color3}${execi 1 /home/mike/radeon.sh}$alignr${color1}GPU VRAM : ${color3}${execi 1 /home/mike/radeon_vram.sh}
+${voffset 2}${color1}Linux NVME : ${color3}${execi 2 echo $(($(cat /sys/class/hwmon/hwmon2/temp1_input) / 1000 *9/5+34))}°F$alignr${color1}Windows NVME : ${color3}${execi 2 echo $(($(cat /sys/class/hwmon/hwmon1/temp1_input) / 1000 *9/5+34))}°F
+$alignc${voffset 2}${color1}Storage Drive : ${color3}${execi 2 sudo hddtemp --u=F /dev/sda | cut -c 31-36}
+#------------+
+#CPU CORES
+#------------+
+${voffset 10}${color1}CPU CORES ${stippled_hr 3 3}
+${voffset 5}${color1} 1${goto 50}${color3}${cpu cpu1}%${goto 85}${color2}${cpubar cpu1 13, 60}${goto 170}${color1} 2${goto 200}${color3}${cpu cpu2}%${goto 235}${color2}${cpubar cpu2 13, 60}
+${voffset 2}${color1} 3${goto 50}${color3}${cpu cpu3}%${goto 85}${color2}${cpubar cpu3 13, 60}${goto 170}${color1} 4${goto 200}${color3}${cpu cpu4}%${goto 235}${color2}${cpubar cpu4 13, 60}
+${voffset 2}${color1} 5${goto 50}${color3}${cpu cpu5}%${goto 85}${color2}${cpubar cpu5 13, 60}${goto 170}${color1} 6${goto 200}${color3}${cpu cpu6}%${goto 235}${color2}${cpubar cpu6 13, 60}
+${voffset 2}${color1} 7${goto 50}${color3}${cpu cpu7}%${goto 85}${color2}${cpubar cpu7 13, 60}${goto 170}${color1} 8${goto 200}${color3}${cpu cpu8}%${goto 235}${color2}${cpubar cpu8 13, 60}
+${voffset 2}${color1} 9${goto 50}${color3}${cpu cpu9}%${goto 85}${color2}${cpubar cpu9 13, 60}${goto 170}${color1} 10${goto 200}${color3}${cpu cpu10}%${goto 235}${color2}${cpubar cpu10 13, 60}
+${voffset 2}${color1} 11${goto 50}${color3}${cpu cpu11}%${goto 85}${color2}${cpubar cpu11 13, 60}${goto 170}${color1} 12${goto 200}${color3}${cpu cpu12}%${goto 235}${color2}${cpubar cpu12 13, 60}
+#------------+
+# PROCESSES
+#------------+
+${voffset 10}${color1}${font :size=14:bold}PROCESSES ${hr 2}${font}
+${voffset 5}${color1}Name${goto 180}CPU%${alignr}MEM%
+${color2}${top name 1} ${goto 180}${top cpu 1}${alignr}${top mem 1}${color3}
+${top name 2} ${goto 180}${top cpu 2}${alignr}${top mem 2}
+${top name 3} ${goto 180}${top cpu 3}${alignr}${top mem 3}
+${top name 4} ${goto 180}${top cpu 4}${alignr}${top mem 4}
+${top name 5} ${goto 180}${top cpu 5}${alignr}${top mem 5}
+#------------+
+# MEMORY
+#------------+
+${voffset 10}${color1}${font :size=14:bold}MEMORY ${hr 2}${font}
+${voffset 5}${color1}Used: ${color3}$mem ($memperc%)${color1}${alignr}Free: ${color3}$memeasyfree
+${color2}${membar}
+${voffset 5}${color1}Name${goto 180}MEM%${alignr}MEM
+${color2}${top_mem name 1} ${goto 180}${top_mem mem 1}${alignr}${top_mem mem_res 1}${color3}
+${top_mem name 2} ${goto 180}${top_mem mem 2}${alignr}${top_mem mem_res 2}
+${top_mem name 3} ${goto 180}${top_mem mem 3}${alignr}${top_mem mem_res 3}
+${top_mem name 4} ${goto 180}${top_mem mem 4}${alignr}${top_mem mem_res 4}
+${top_mem name 5} ${goto 180}${top_mem mem 5}${alignr}${top_mem mem_res 5}
+#------------+
+# GPU
+#------------+
+#${voffset 10}${color1}${font :size=14:bold}VIDEO ${hr 2}${font}
+#${voffset 5}${color1}GPU :$alignr${color3}${execi 6000 nvidia-smi --query-gpu=gpu_name --format=csv,noheader,nounits}
+#${color1}Driver :$alignr${color3}${execi 6000 nvidia-smi --query-gpu=driver_version --format=csv,noheader,nounits}
+#${color1}Utilization :$alignr${color3}${exec nvidia-smi -i 0 | grep % | cut -c 61-63} %
+#${color1}VRAM Utilization :$alignr${color3}${exec nvidia-smi -i 0| grep % | cut -c 37-40} MB
+#------------+
+# DISK
+#------------+
+${voffset 10}${color1}${font :size=14:bold}DISKS ${hr 2}${font}
+${voffset 5}${color1}ROOT ${stippled_hr 3 3}
+${voffset 5}${color1}Used: ${color3}${fs_used /}${color1}${goto 200}Free:${goto 250}${color3}${fs_free /}
+${color2}${fs_bar /}
+${voffset 5}${color1}STORAGE ${stippled_hr 3 3}
+${voffset 5}${color1}Used: ${color3}${fs_used /mnt/storage}${color1}${goto 200}Free:${goto 250}${color3}${fs_free /mnt/storage}
+${color2}${fs_bar /mnt/storage}
+${voffset 5}${color1}SWAP ${stippled_hr 3 3}
+${voffset 5}${color1}Used: ${color3}${swap}${color1}${goto 200}Free:${goto 250}${color3}${swapmax}
+${color2}${swapbar}
+#------------+
+# NETWORK
+#------------+
+${voffset 10}${color1}${font :size=14:bold}NETWORK ${hr 2}${font}
+${voffset 2}${color1}IP Address :$alignr${color3} ${addr enp14s0}
+${voffset 2}${color1}DNS :$alignr${color3} ${nameserver}
+${voffset 2}${color1}Total Up :$alignr${color3} ${totalup enp14s0}
+${voffset 2}${color1}Total Down :$alignr${color3} ${totaldown enp14s0}
+
+${voffset 5}${color3}Up: ${upspeedf enp14s0} KiB/s${alignr}Down: ${downspeedf enp14s0} KiB/s
+
+#${color2}${upspeedgraph enp14s0 40,130 -l}$alignr${downspeedgraph enp14s0 40, 130 -l}
+#------------+
+]]
+```
